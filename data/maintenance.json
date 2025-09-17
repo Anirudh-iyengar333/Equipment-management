@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1001,
+    "equipment_asset": "LAB-2025-DMM-001",
+    "type": "Calibration",
+    "date": "2025-09-17",
+    "description": "Test cal",
+    "technician": "",
+    "cost": 0,
+    "next_due": "2025-10-18",
+    "equipment_status": "Operational",
+    "files": [
+      {
+        "filename": "LAB-2025-DMM-001-2025-09-17-maintenance-file.docx",
+        "originalname": "PIU-Qual-doc.docx",
+        "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 17871,
+        "path": "C:\\Users\\Anirudh\\OneDrive - Digantara Research and Technologies Pvt. Ltd\\Desktop\\Test Doc\\Eng lab\\Equipment list\\Tracker\\uploads\\LAB-2025-DMM-001-2025-09-17-maintenance-file.docx"
+      },
+      {
+        "filename": "LAB-2025-DMM-001-2025-09-17-maintenance-file.docx",
+        "originalname": "PIU-Qual-doc.docx",
+        "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "size": 17871,
+        "path": "C:\\Users\\Anirudh\\OneDrive - Digantara Research and Technologies Pvt. Ltd\\Desktop\\Test Doc\\Eng lab\\Equipment list\\Tracker\\uploads\\LAB-2025-DMM-001-2025-09-17-maintenance-file.docx"
+      }
+    ],
+    "created_at": "2025-09-17T04:08:59.809Z"
+  },
+  {
+    "id": 1002,
+    "equipment_asset": "LAB-2025-OSC-003",
+    "type": "Calibration",
+    "date": "2025-09-17",
+    "description": "test cal",
+    "technician": "Anirudh ",
+    "cost": 0,
+    "next_due": "2025-10-17",
+    "equipment_status": "Operational",
+    "files": [
+      {
+        "filename": "LAB-2025-OSC-003-2025-09-17-maintenance-file.pdf",
+        "originalname": "Lab1_Installation_Prerequisite.pdf",
+        "mimetype": "application/pdf",
+        "size": 388331,
+        "path": "C:\\Users\\Anirudh\\OneDrive - Digantara Research and Technologies Pvt. Ltd\\Desktop\\Test Doc\\Eng lab\\Equipment list\\Tracker\\uploads\\LAB-2025-OSC-003-2025-09-17-maintenance-file.pdf"
+      }
+    ],
+    "created_at": "2025-09-17T04:15:52.670Z"
+  }
+]

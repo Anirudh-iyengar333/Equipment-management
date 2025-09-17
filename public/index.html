@@ -1,0 +1,2158 @@
+<!-- Declares the document type as HTML5 -->
+<!DOCTYPE html>
+<!-- Root element of the HTML document, language set to English -->
+<html lang="en">
+<!-- Head section contains metadata and links for the document -->
+<head>
+    <!-- Sets character encoding to UTF-8 for proper text display -->
+    <meta charset="UTF-8">
+    <!-- Sets the viewport for responsive design on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title of the web page shown in browser tab -->
+    <title>Lab Equipment Management System</title>
+    <!-- Loads Chart.js library from CDN for charts/graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Links to external CSS stylesheet for page styling -->
+    <link rel="stylesheet" href="style.css">
+<!-- End of head section -->
+</head>
+<!-- Body section contains the visible content of the page -->
+<body>
+    <!-- Main app container for layout -->
+    <div class="app-container">
+        <!-- Sidebar Navigation for switching between views -->
+        <div class="sidebar">
+            <!-- Sidebar header with title and subtitle -->
+            
+          
+            <div class="sidebar-header">
+                
+                <h2>Digantara Equipment Manager</h2> <!-- Sidebar main title -->
+                <p class="subtitle">Lab Equipment Tracking</p> <!-- Sidebar subtitle -->
+            </div>
+            <!-- Navigation menu for switching views -->
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link active" data-view="dashboard">📊 Dashboard</a></li> <!-- Link to dashboard view -->
+                    <li><a href="#" class="nav-link" data-view="equipment">🔧 Equipment</a></li> <!-- Link to equipment view -->
+                    <li><a href="#" class="nav-link" data-view="maintenance">🛠️ Maintenance</a></li> <!-- Link to maintenance view -->
+                    <li><a href="#" class="nav-link" data-view="reports">📋 Reports</a></li> <!-- Link to reports view -->
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content Area where views are displayed -->
+        <div class="main-content">
+            <!-- Dashboard View (default active view) -->
+            <div id="dashboard-view" class="view active">
+                <div class="view-header">
+                    <h1>Dashboard</h1> <!-- Dashboard main heading -->
+                </div>
+
+                <!-- Summary Cards showing key metrics -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-card__icon">📊</div> <!-- Icon for total equipment -->
+                        <div class="summary-card__content">
+                            <h3 id="total-equipment">0</h3> <!-- Displays total equipment count -->
+                            <p>Total Equipment</p> <!-- Label for total equipment -->
+                        </div>
+                    </div>
+                    <div class="summary-card status-operational">
+                        <div class="summary-card__icon">✅</div> <!-- Icon for operational equipment -->
+                        <div class="summary-card__content">
+                            <h3 id="operational-count">0</h3> <!-- Displays operational equipment count -->
+                            <p>Operational</p> <!-- Label for operational equipment -->
+                        </div>
+                    </div>
+                    <div class="summary-card status-maintenance">
+                        <div class="summary-card__icon">⚠️</div> <!-- Icon for maintenance due -->
+                        <div class="summary-card__content">
+                            <h3 id="maintenance-count">0</h3> <!-- Displays maintenance due count -->
+                            <p>Maintenance Due</p> <!-- Label for maintenance due -->
+                        </div>
+                    </div>
+                    <div class="summary-card status-calibration">
+                        <div class="summary-card__icon">🔧</div> <!-- Icon for calibration due -->
+                        <div class="summary-card__content">
+                            <h3 id="calibration-count">0</h3> <!-- Displays calibration due count -->
+                            <p>Calibration Due</p> <!-- Label for calibration due -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Charts for visualizing data -->
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Equipment by Category</h3> <!-- Chart title -->
+                            <div class="chart-container">
+                                <canvas id="category-chart"></canvas> <!-- Chart.js canvas for equipment categories -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Upcoming Maintenance</h3> <!-- Chart title -->
+                            <div class="maintenance-alerts" id="maintenance-alerts">
+                                <!-- Alerts populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment View for managing equipment -->
+            <div id="equipment-view" class="view">
+                <div class="view-header">
+                    <h1>Equipment Management</h1> <!-- Equipment management heading -->
+                    <button id="add-equipment-btn" class="btn btn--primary">➕ Add Equipment</button> <!-- Button to add equipment -->
+                </div>
+
+                <!-- Search and Filters for equipment list -->
+                <div class="filters-section">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="form-control" placeholder="Search for equipment..."> <!-- Search input box -->
+                    </div>
+                    <div class="filter-controls">
+                        <div class="form-group">
+                            <label class="form-label">Category</label> <!-- Label for category filter -->
+                            <select id="category-filter" class="form-control"> <!-- Dropdown for category filter -->
+                                <option value="">All Categories</option> <!-- Option to show all categories -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label> <!-- Label for status filter -->
+                            <select id="status-filter" class="form-control"> <!-- Dropdown for status filter -->
+                                <option value="">All Status</option> <!-- Option to show all statuses -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label> <!-- Label for location filter -->
+                            <select id="location-filter" class="form-control"> <!-- Dropdown for location filter -->
+                                <option value="">All Locations</option> <!-- Option to show all locations -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button onclick="exportToCSV()" class="btn btn--secondary">📊 Export CSV</button> <!-- Button to export equipment table to CSV -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipment Table -->
+                <div class="card">
+                    <div class="table-container">
+                        <table class="equipment-table"> <!-- Table for equipment list -->
+                            <thead>
+                                <tr>
+                                    <th>Asset Number</th> <!-- Column for asset number -->
+                                    <th>Equipment Name</th> <!-- Column for equipment name -->
+                                    <th>Category</th> <!-- Column for category -->
+                                    <th>Location</th> <!-- Column for location -->
+                                    <th>Status</th> <!-- Column for status -->
+                                    <th>Next Maintenance</th> <!-- Column for next maintenance date -->
+                                    <th>Actions</th> <!-- Column for actions (edit/delete) -->
+                                </tr>
+                            </thead>
+                            <tbody id="equipment-table-body"> <!-- Table body populated by JavaScript -->
+                                <!-- Table rows populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance View for managing maintenance records -->
+            <div id="maintenance-view" class="view">
+                <div class="view-header">
+                    <h1>Maintenance Records</h1> <!-- Maintenance records heading -->
+                    <div class="btn-group">
+                        <button id="add-maintenance-btn" class="btn btn--primary">➕ Add Maintenance</button> <!-- Button to add maintenance record -->
+                        <button onclick="exportMaintenanceToCSV()" class="btn btn--secondary">📊 Export Records</button> <!-- Button to export maintenance records to CSV -->
+                    </div>
+                </div>
+
+                <!-- Maintenance Filters for searching/filtering records -->
+                <div class="filters-section">
+                    <div class="search-box">
+                        <input type="text" id="maintenance-search" class="form-control" placeholder="Search maintenance records..."> <!-- Search input for maintenance records -->
+                    </div>
+                    <div class="filter-controls">
+                        <div class="form-group">
+                            <label class="form-label">Equipment</label> <!-- Label for equipment filter -->
+                            <select id="maintenance-equipment-filter" class="form-control"> <!-- Dropdown for equipment filter -->
+                                <option value="">All Equipment</option> <!-- Option to show all equipment -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Type</label> <!-- Label for maintenance type filter -->
+                            <select id="maintenance-type-filter" class="form-control"> <!-- Dropdown for maintenance type filter -->
+                                <option value="">All Types</option> <!-- Option to show all types -->
+                                <option value="Preventive Maintenance">Preventive Maintenance</option> <!-- Preventive maintenance type -->
+                                <option value="Corrective Maintenance">Corrective Maintenance</option> <!-- Corrective maintenance type -->
+                                <option value="Calibration">Calibration</option> <!-- Calibration type -->
+                                <option value="Inspection">Inspection</option> <!-- Inspection type -->
+                                <option value="Cleaning">Cleaning</option> <!-- Cleaning type -->
+                                <option value="Software Update">Software Update</option> <!-- Software update type -->
+                                <option value="Repair">Repair</option> <!-- Repair type -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date Range</label> <!-- Label for date range filter -->
+                            <select id="maintenance-date-filter" class="form-control"> <!-- Dropdown for date range filter -->
+                                <option value="">All Time</option> <!-- Option to show all time periods -->
+                                <option value="last-30">Last 30 Days</option> <!-- Option for last 30 days -->
+                                <option value="last-90">Last 90 Days</option> <!-- Option for last 90 days -->
+                                <option value="last-year">Last Year</option> <!-- Option for last year -->
+                            </select> <!-- End of date range filter dropdown -->
+                        </div> <!-- End of form-group for date range -->
+                    </div> <!-- End of filter-controls -->
+                </div> <!-- End of filters-section -->
+
+                <!-- Maintenance Records Table -->
+                <div class="card"> <!-- Card container for maintenance records table -->
+                    <div class="table-container"> <!-- Table container -->
+                        <table class="equipment-table"> <!-- Table for maintenance records -->
+                            <thead> <!-- Table header -->
+                                <tr> <!-- Table row for column headers -->
+                                    <th>Record ID</th> <!-- Column for record ID -->
+                                    <th>Equipment</th> <!-- Column for equipment -->
+                                    <th>Type</th> <!-- Column for maintenance type -->
+                                    <th>Date</th> <!-- Column for maintenance date -->
+                                    <th>Technician</th> <!-- Column for technician -->
+                                    <th>Cost</th> <!-- Column for cost -->
+                                    <th>Files</th> <!-- Column for attached files -->
+                                    <th>Actions</th> <!-- Column for actions (edit/delete) -->
+                                </tr> <!-- End of column headers row -->
+                            </thead> <!-- End of table header -->
+                            <tbody id="maintenance-table-body"> <!-- Table body populated by JavaScript -->
+                                <!-- Maintenance records populated by JavaScript -->
+                            </tbody> <!-- End of table body -->
+                        </table> <!-- End of maintenance records table -->
+                    </div> <!-- End of table-container -->
+                </div> <!-- End of card for maintenance records table -->
+            </div> <!-- End of maintenance-view -->
+
+            <!-- Reports View for analytics and reports -->
+            <div id="reports-view" class="view"> <!-- Reports view container -->
+                <div class="view-header"> <!-- Header for reports view -->
+                    <h1>Reports & Analytics</h1> <!-- Reports main heading -->
+                    <div class="btn-group"> <!-- Button group for report actions -->
+                        <button onclick="generateMaintenanceReport()" class="btn btn--secondary">📊 Maintenance Report</button> <!-- Button to generate maintenance report -->
+                        <button onclick="printReport()" class="btn btn--secondary">🖨️ Print</button> <!-- Button to print report -->
+                    </div> <!-- End of btn-group -->
+                </div> <!-- End of view-header -->
+                <div class="reports-grid"> <!-- Grid for report cards -->
+                    <div class="card"> <!-- Card for status distribution chart -->
+                        <div class="card__body"> <!-- Card body -->
+                            <h3>Status Distribution</h3> <!-- Chart title -->
+                            <div class="chart-container"> <!-- Chart container -->
+                                <canvas id="status-chart"></canvas> <!-- Chart.js canvas for status distribution -->
+                            </div> <!-- End of chart-container -->
+                        </div> <!-- End of card__body -->
+                    </div> <!-- End of card -->
+                </div> <!-- End of reports-grid -->
+            </div> <!-- End of reports-view -->
+        </div> <!-- End of main-content -->
+    </div> <!-- End of app-container -->
+
+    <!-- Equipment Modal (Add/Edit) for adding or editing equipment -->
+    <div id="equipment-modal" class="modal hidden"> <!-- Equipment modal container -->
+        <div class="modal-overlay"></div> <!-- Modal overlay -->
+        <div class="modal-content"> <!-- Modal content -->
+            <div class="modal-header"> <!-- Modal header -->
+                <h2 id="equipment-modal-title">Add Equipment</h2> <!-- Modal title -->
+                <button class="modal-close">&times;</button> <!-- Button to close modal -->
+            </div> <!-- End of modal-header -->
+            <div class="modal-body"> <!-- Modal body -->
+                <form id="equipment-form"> <!-- Equipment form -->
+                    <div class="form-grid"> <!-- Grid layout for form fields -->
+                        <div class="form-group"> <!-- Form group for asset number -->
+                            <label class="form-label">Asset Number</label> <!-- Label for asset number -->
+                            <input type="text" id="asset-number" name="asset_number" class="form-control" readonly> <!-- Input for asset number (readonly) -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for equipment name -->
+                            <label class="form-label">Equipment Name *</label> <!-- Label for equipment name -->
+                            <input type="text" id="name" name="name" class="form-control" required> <!-- Input for equipment name (required) -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for category -->
+                            <label class="form-label">Category *</label> <!-- Label for category -->
+                            <select id="category" name="category" class="form-control" required> <!-- Dropdown for category (required) -->
+                                <option value="">Select Category</option> <!-- Option to select category -->
+                            </select> <!-- End of category dropdown -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for model -->
+                            <label class="form-label">Model</label> <!-- Label for model -->
+                            <input type="text" id="model" name="model" class="form-control"> <!-- Input for model -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for serial number -->
+                            <label class="form-label">Serial Number</label> <!-- Label for serial number -->
+                            <input type="text" id="serial" name="serial_number" class="form-control"> <!-- Input for serial number -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for manufacturer -->
+                            <label class="form-label">Manufacturer</label> <!-- Label for manufacturer -->
+                            <input type="text" id="manufacturer" name="manufacturer" class="form-control"> <!-- Input for manufacturer -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for location -->
+                            <label class="form-label">Location</label> <!-- Label for location -->
+                            <select id="location" name="location" class="form-control"> <!-- Dropdown for location -->
+                                <option value="">Select Location</option> <!-- Option to select location -->
+                            </select> <!-- End of location dropdown -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for purchase date -->
+                            <label class="form-label">Purchase Date</label> <!-- Label for purchase date -->
+                            <input type="date" id="purchase-date" name="purchase_date" class="form-control"> <!-- Input for purchase date -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for cost -->
+                            <label class="form-label">Cost</label> <!-- Label for cost -->
+                            <input type="number" id="cost" name="cost" class="form-control" step="0.01" min="0"> <!-- Input for cost -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for next maintenance date -->
+                            <label class="form-label">Maintenance Date</label> <!-- Label for next maintenance date -->
+                            <input type="date" id="next-maintenance" name="next_maintenance" class="form-control"> <!-- Input for next maintenance date -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for warranty expiry -->
+                            <label class="form-label">Warranty Expiry</label> <!-- Label for warranty expiry -->
+                            <input type="date" id="warranty" name="warranty_expiry" class="form-control"> <!-- Input for warranty expiry -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for status -->
+                            <label class="form-label">Status</label> <!-- Label for status -->
+                            <select id="status" name="status" class="form-control"> <!-- Dropdown for status -->
+                                <option value="Operational">Operational</option> <!-- Operational status -->
+                                <option value="Maintenance Required">Maintenance Required</option> <!-- Maintenance required status -->
+                                <option value="Out of Service">Out of Service</option> <!-- Out of service status -->
+                                <option value="Calibration Due">Calibration Due</option> <!-- Calibration due status -->
+                            </select> <!-- End of status dropdown -->
+                        </div> <!-- End of form-group -->
+                    </div> <!-- End of form-grid -->
+                    <div class="modal-actions"> <!-- Modal actions -->
+                        <button type="button" class="btn btn--secondary modal-cancel">Cancel</button> <!-- Button to cancel -->
+                        <button type="submit" class="btn btn--primary">Save Equipment</button> <!-- Button to save equipment -->
+                    </div> <!-- End of modal-actions -->
+                </form> <!-- End of equipment form -->
+            </div> <!-- End of modal-body -->
+        </div> <!-- End of modal-content -->
+    </div> <!-- End of equipment-modal -->
+
+    <!-- Maintenance Modal (Add/Edit) WITH FILE UPLOAD -->
+    <div id="maintenance-modal" class="modal hidden"> <!-- Maintenance modal container -->
+        <div class="modal-overlay"></div> <!-- Modal overlay -->
+        <div class="modal-content modal-content--large"> <!-- Large modal content -->
+            <div class="modal-header"> <!-- Modal header -->
+                <h2 id="maintenance-modal-title">Add Maintenance Record</h2> <!-- Modal title -->
+                <button class="modal-close">&times;</button> <!-- Button to close modal -->
+            </div> <!-- End of modal-header -->
+            <div class="modal-body"> <!-- Modal body -->
+                <form id="maintenance-form" enctype="multipart/form-data"> <!-- Maintenance form with file upload -->
+                    <div class="form-grid"> <!-- Grid layout for form fields -->
+                        <div class="form-group"> <!-- Form group for equipment -->
+                            <label class="form-label">Equipment</label> <!-- Label for equipment -->
+                            <select id="maintenance-equipment" name="equipment_asset" class="form-control" required> <!-- Dropdown for equipment (required) -->
+                                <option value="">Select Equipment</option> <!-- Option to select equipment -->
+                            </select> <!-- End of equipment dropdown -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for maintenance type -->
+                            <label class="form-label">Type *</label> <!-- Label for maintenance type -->
+                            <select id="maintenance-type" name="type" class="form-control" required> <!-- Dropdown for maintenance type (required) -->
+                                <option value="">Select Type</option> <!-- Option to select type -->
+                                <option value="Preventive Maintenance">Preventive Maintenance</option> <!-- Preventive maintenance type -->
+                                <option value="Corrective Maintenance">Corrective Maintenance</option> <!-- Corrective maintenance type -->
+                                <option value="Calibration">Calibration</option> <!-- Calibration type -->
+                                <option value="Inspection">Inspection</option> <!-- Inspection type -->
+                                <option value="Cleaning">Cleaning</option> <!-- Cleaning type -->
+                                <option value="Software Update">Software Update</option> <!-- Software update type -->
+                                <option value="Repair">Repair</option> <!-- Repair type -->
+                            </select> <!-- End of maintenance type dropdown -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for date -->
+                            <label class="form-label">Date *</label> <!-- Label for date -->
+                            <input type="date" id="maintenance-date" name="date" class="form-control" required> <!-- Input for date (required) -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for technician -->
+                            <label class="form-label">Technician</label> <!-- Label for technician -->
+                            <input type="text" id="maintenance-technician" name="technician" class="form-control"> <!-- Input for technician -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for cost -->
+                            <label class="form-label">Cost</label> <!-- Label for cost -->
+                            <input type="number" id="maintenance-cost" name="cost" class="form-control" step="0.01" min="0"> <!-- Input for cost -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for next due date -->
+                            <label class="form-label">Next Due Date</label> <!-- Label for next due date -->
+                            <input type="date" id="maintenance-next-due" name="next_due" class="form-control"> <!-- Input for next due date -->
+                        </div> <!-- End of form-group -->
+                        <div class="form-group"> <!-- Form group for equipment status update -->
+                            <label class="form-label">🔄 Update Equipment Status</label> <!-- Label for equipment status update -->
+                            <select id="maintenance-status" name="equipment_status" class="form-control"> <!-- Dropdown for equipment status update -->
+                                <option value="">Keep current status</option> <!-- Option to keep current status -->
+                                <option value="Operational">✅ Operational</option> <!-- Operational status -->
+                                <option value="Maintenance Required">⚠️ Maintenance Required</option> <!-- Maintenance required status -->
+                                <option value="Out of Service">❌ Out of Service</option> <!-- Out of service status -->
+                                <option value="Calibration Due">🔧 Calibration Due</option> <!-- Calibration due status -->
+                            </select> <!-- End of equipment status dropdown -->
+                        </div> <!-- End of form-group -->
+                    </div> <!-- End of form-grid -->
+                    
+                    <!-- Description Field for maintenance work -->
+                    <div class="form-group"> <!-- Form group for description -->
+                        <label class="form-label">Description *</label> <!-- Label for description -->
+                        <textarea id="maintenance-description" name="description" class="form-control" rows="4" required placeholder="Describe the maintenance work performed..."></textarea> <!-- Textarea for maintenance description (required) -->
+                    </div> <!-- End of form-group -->
+
+                    <!-- File Upload Section for maintenance files -->
+                    <div class="file-upload-section"> <!-- Section for file upload -->
+                        <h4>📎 Attach Files</h4> <!-- Heading for file upload -->
+                        <p class="file-upload-help">Upload photos, manuals, certificates, or other documentation</p> <!-- Help text for file upload -->
+                        
+                        <div class="file-upload-area" id="file-upload-area"> <!-- Area for file upload -->
+                            <div class="file-upload-dropzone"> <!-- Dropzone for drag and drop -->
+                                <div class="file-upload-icon">📁</div> <!-- Icon for file upload -->
+                                <p><strong>Click to select files</strong> or drag and drop</p> <!-- Instruction for file selection -->
+                                <p class="file-upload-types">Supports: PDF, JPG, PNG, DOC, Excel (Max 10MB each)</p> <!-- Supported file types -->
+                                <input type="file" id="maintenance-files" name="files" multiple class="file-input" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt"> <!-- File input for maintenance files -->
+                            </div> <!-- End of file-upload-dropzone -->
+                        </div> <!-- End of file-upload-area -->
+
+                        <!-- File Preview List -->
+                        <div id="file-preview-list" class="file-preview-list"></div> <!-- List for file previews -->
+                        
+                        <!-- Existing Files (for edit mode) -->
+                        <div id="existing-files-list" class="existing-files-list hidden"> <!-- List for existing files -->
+                            <h5>📋 Current Files</h5> <!-- Heading for current files -->
+                            <div id="existing-files-container"></div> <!-- Container for existing files -->
+                        </div> <!-- End of existing-files-list -->
+                    </div> <!-- End of file-upload-section -->
+
+                    <div class="modal-actions"> <!-- Modal actions -->
+                        <button type="button" class="btn btn--secondary modal-cancel">Cancel</button> <!-- Button to cancel -->
+                        <button type="submit" class="btn btn--primary">💾 Save Maintenance</button> <!-- Button to save maintenance record -->
+                    </div> <!-- End of modal-actions -->
+                </form> <!-- End of maintenance form -->
+            </div> <!-- End of modal-body -->
+        </div> <!-- End of modal-content -->
+    </div> <!-- End of maintenance-modal -->
+
+    <!-- Maintenance Detail Modal for viewing maintenance details -->
+    <div id="maintenance-detail-modal" class="modal hidden"> <!-- Maintenance detail modal container -->
+        <div class="modal-overlay"></div> <!-- Modal overlay -->
+        <div class="modal-content modal-content--large"> <!-- Large modal content -->
+            <div class="modal-header"> <!-- Modal header -->
+                <h2 id="maintenance-detail-title">Maintenance Details</h2> <!-- Modal title -->
+                <button class="modal-close">&times;</button> <!-- Button to close modal -->
+            </div> <!-- End of modal-header -->
+            <div class="modal-body"> <!-- Modal body -->
+                <div id="maintenance-detail-content"> <!-- Content for maintenance details -->
+                    <!-- Maintenance details populated by JavaScript -->
+                </div> <!-- End of maintenance-detail-content -->
+                <div class="modal-actions"> <!-- Modal actions -->
+                    <button class="btn btn--primary" id="edit-maintenance-btn">✏️ Edit</button> <!-- Button to edit maintenance -->
+                    <button class="btn btn--outline" id="delete-maintenance-btn">🗑️ Delete</button> <!-- Button to delete maintenance -->
+                </div> <!-- End of modal-actions -->
+            </div> <!-- End of modal-body -->
+        </div> <!-- End of modal-content -->
+    </div> <!-- End of maintenance-detail-modal -->
+
+    <!-- Equipment Detail Modal for viewing equipment details -->
+    <div id="equipment-detail-modal" class="modal hidden"> <!-- Equipment detail modal container -->
+        <div class="modal-overlay"></div> <!-- Modal overlay -->
+        <div class="modal-content"> <!-- Modal content -->
+            <div class="modal-header"> <!-- Modal header -->
+                <h2 id="equipment-detail-title">Equipment Details</h2> <!-- Modal title -->
+                <button class="modal-close">&times;</button> <!-- Button to close modal -->
+            </div> <!-- End of modal-header -->
+            <div class="modal-body"> <!-- Modal body -->
+                <div id="equipment-detail-content"> <!-- Content for equipment details -->
+                    <!-- Equipment details populated by JavaScript -->
+                </div> <!-- End of equipment-detail-content -->
+            </div> <!-- End of modal-body -->
+        </div> <!-- End of modal-content -->
+    </div> <!-- End of equipment-detail-modal -->
+
+    <!-- Toast Notifications for user feedback -->
+    <div id="toast" class="toast hidden"> <!-- Toast notification container -->
+        <div id="toast-message"></div> <!-- Toast message content -->
+    </div> <!-- End of toast -->
+
+    <!-- Loading Overlay for file uploads -->
+    <div id="loading-overlay" class="loading-overlay hidden"> <!-- Loading overlay container -->
+        <div class="loading-spinner"></div> <!-- Loading spinner -->
+        <p>Uploading files...</p> <!-- Loading message -->
+    </div> <!-- End of loading-overlay -->
+
+    <script> <!-- Start of embedded JavaScript code -->
+        // =============================================================================
+        // EQUIPMENT MANAGEMENT SYSTEM - WITH MAINTENANCE DETAILS & FILE UPLOAD
+        // =============================================================================
+
+        class EquipmentManager { // EquipmentManager class definition
+            constructor() { // Constructor for EquipmentManager
+                this.equipment = []; // Array to store equipment data
+                this.maintenanceRecords = []; // Array to store maintenance records
+                this.currentView = 'dashboard'; // Current view (dashboard/equipment/maintenance/reports)
+                this.charts = {}; // Object to store chart instances
+                this.serverConnected = false; // Flag for server connection status
+                this.editingEquipment = null; // Currently editing equipment
+                this.editingMaintenance = null; // Currently editing maintenance record
+                this.selectedFiles = []; // Array to store selected files for upload
+
+                // Equipment categories
+                this.categories = [ // Array of equipment categories
+                    { code: "OSC", name: "Oscilloscope" }, // Oscilloscope category
+                    { code: "DMM", name: "Multimeter" }, // Multimeter category
+                    { code: "PSU", name: "Power Supply" }, // Power Supply category
+                    { code: "GEN", name: "Generator" }, // Generator category
+                    { code: "ANA", name: "Analyzer" }, // Analyzer category
+                    { code: "CPU", name: "Computer" }, // Computer category
+                    { code: "MEC", name: "Mechanical" }, // Mechanical category
+                    { code: "OTH", name: "Other" } // Other category
+                ]; // End of categories array
+
+                // Equipment locations
+                this.locations = [ // Array of equipment locations
+                    "Test Bench 1", "Test Bench 2", "Test Bench 3", // Test benches
+                    "RF Test Area", "Storage Room", "Main Lab", // Other lab areas
+                    "Clean Room", "Office" // Clean room and office
+                ]; // End of locations array
+
+                this.initializeApp(); // Initialize the application
+            } // End of constructor
+
+            async initializeApp() { // Initialize the app asynchronously
+                await this.checkServerConnection(); // Check server connection
+                await this.loadDataFromServer(); // Load data from server
+                this.populateFormOptions(); // Populate form dropdowns
+                this.setupEventListeners(); // Set up event listeners
+                this.setupFileUpload(); // Set up file upload functionality
+                this.showView('dashboard'); // Show dashboard view by default
+            } // End of initializeApp
+
+            async checkServerConnection() { // Check if server is connected
+                try {
+                    const response = await fetch('/api/server-info'); // Fetch server info
+                    this.serverConnected = response.ok; // Set serverConnected flag
+                    console.log('Server connection:', this.serverConnected ? 'Connected' : 'Failed'); // Log connection status
+                } catch (error) {
+                    this.serverConnected = false; // Set serverConnected to false on error
+                    console.error('Server connection failed:', error); // Log error
+                    this.loadSampleDataOffline(); // Load sample data if offline
+                }
+            } // End of checkServerConnection
+
+            async loadDataFromServer() { // Load equipment and maintenance data from server
+                if (!this.serverConnected) return; // Return if not connected
+
+                try {
+                    const [equipmentResponse, maintenanceResponse] = await Promise.all([
+                        fetch('/api/equipment'), // Fetch equipment data
+                        fetch('/api/maintenance') // Fetch maintenance data
+                    ]); // Wait for both fetches
+
+                    if (equipmentResponse.ok) {
+                        this.equipment = await equipmentResponse.json(); // Parse equipment data
+                    }
+                    
+                    if (maintenanceResponse.ok) {
+                        this.maintenanceRecords = await maintenanceResponse.json(); // Parse maintenance data
+                    }
+
+                    console.log(`Loaded ${this.equipment.length} equipment items and ${this.maintenanceRecords.length} maintenance records`); // Log loaded data
+                } catch (error) {
+                    console.error('Error loading data:', error); // Log error
+                    this.loadSampleDataOffline(); // Load sample data if error
+                }
+            } // End of loadDataFromServer
+
+            loadSampleDataOffline() { // Load sample data for offline mode
+                this.equipment = [ // Sample equipment array
+                    {
+                        asset_number: "LAB-2025-OSC-001", // Sample asset number
+                        name: "Digital Oscilloscope", // Sample equipment name
+                        model: "DS1054Z", // Sample model
+                        category: "Oscilloscope", // Sample category
+                        location: "Test Bench 1", // Sample location
+                        status: "Operational" // Sample status
+                    }
+                ]; // End of sample equipment
+                this.maintenanceRecords = []; // Empty maintenance records
+                console.log('Running in offline mode'); // Log offline mode
+            } // End of loadSampleDataOffline
+
+            setupEventListeners() { // Set up event listeners for UI
+                // Navigation
+                document.querySelectorAll('.nav-link').forEach(link => { // For each navigation link
+                    link.addEventListener('click', (e) => { // Add click event
+                        e.preventDefault(); // Prevent default link behavior
+                        const view = link.getAttribute('data-view'); // Get view from data attribute
+                        this.showView(view); // Show selected view
+                    }); // End of click event
+                }); // End of forEach
+
+                // Buttons
+                document.getElementById('add-equipment-btn').addEventListener('click', () => { // Add equipment button
+                    this.showEquipmentModal(); // Show equipment modal
+                });
+
+                document.getElementById('add-maintenance-btn').addEventListener('click', () => { // Add maintenance button
+                    this.showMaintenanceModal(); // Show maintenance modal
+                });
+
+                // Modal controls
+                document.addEventListener('click', (e) => { // Listen for clicks on document
+                    if (e.target.classList.contains('modal-close') || // If close button
+                        e.target.classList.contains('modal-cancel') || // If cancel button
+                        e.target.classList.contains('modal-overlay')) { // If overlay
+                        this.hideModals(); // Hide all modals
+                    }
+                });
+
+                // Forms
+                document.getElementById('equipment-form').addEventListener('submit', (e) => { // Equipment form submit
+                    e.preventDefault(); // Prevent default submit
+                    this.saveEquipment(); // Save equipment
+                });
+
+                document.getElementById('maintenance-form').addEventListener('submit', (e) => { // Maintenance form submit
+                    e.preventDefault(); // Prevent default submit
+                    this.saveMaintenanceRecord(); // Save maintenance record
+                });
+
+                // Category change for asset number generation
+                document.getElementById('category').addEventListener('change', () => { // Category dropdown change
+                    this.generateAssetNumber(); // Generate asset number
+                });
+
+                // Equipment search and filters
+                document.getElementById('search-input').addEventListener('input', () => { // Search input change
+                    this.filterEquipment(); // Filter equipment
+                });
+
+                ['category-filter', 'status-filter', 'location-filter'].forEach(id => { // For each filter dropdown
+                    document.getElementById(id).addEventListener('change', () => { // Dropdown change
+                        this.filterEquipment(); // Filter equipment
+                    });
+                });
+
+                // Maintenance search and filters
+                document.getElementById('maintenance-search').addEventListener('input', () => { // Maintenance search input
+                    this.filterMaintenanceRecords(); // Filter maintenance records
+                });
+
+                ['maintenance-equipment-filter', 'maintenance-type-filter', 'maintenance-date-filter'].forEach(id => { // For each maintenance filter
+                    document.getElementById(id).addEventListener('change', () => { // Dropdown change
+                        this.filterMaintenanceRecords(); // Filter maintenance records
+                    });
+                });
+            } // End of setupEventListeners
+
+            setupFileUpload() { // Set up file upload functionality
+                const fileInput = document.getElementById('maintenance-files'); // File input element
+                const dropzone = document.querySelector('.file-upload-dropzone'); // Dropzone element
+                const fileUploadArea = document.getElementById('file-upload-area'); // File upload area
+
+                // Click to select files
+                dropzone.addEventListener('click', () => { // Dropzone click event
+                    fileInput.click(); // Trigger file input click
+                });
+
+                // File input change
+                fileInput.addEventListener('change', (e) => { // File input change event
+                    this.handleFileSelection(e.target.files); // Handle selected files
+                });
+
+                // Drag and drop
+                fileUploadArea.addEventListener('dragover', (e) => { // Drag over event
+                    e.preventDefault(); // Prevent default
+                    dropzone.classList.add('dragover'); // Add dragover class
+                });
+
+                fileUploadArea.addEventListener('dragleave', (e) => { // Drag leave event
+                    e.preventDefault(); // Prevent default
+                    dropzone.classList.remove('dragover'); // Remove dragover class
+                });
+
+                fileUploadArea.addEventListener('drop', (e) => { // Drop event
+                    e.preventDefault(); // Prevent default
+                    dropzone.classList.remove('dragover'); // Remove dragover class
+                    this.handleFileSelection(e.dataTransfer.files); // Handle dropped files
+                });
+            } // End of setupFileUpload
+
+            handleFileSelection(files) { // Handle file selection for upload
+                const maxFileSize = 10 * 1024 * 1024; // 10MB max file size
+                const allowedTypes = [ // Allowed file types
+                    'application/pdf', // PDF
+                    'image/jpeg', 'image/jpg', 'image/png', // Images
+                    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Word docs
+                    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Excel
+                    'text/plain' // Text files
+                ];
+
+                Array.from(files).forEach(file => { // For each selected file
+                    // Check file size
+                    if (file.size > maxFileSize) { // If file too large
+                        this.showToast(`File "${file.name}" is too large. Maximum size is 10MB.`, 'error'); // Show error toast
+                        return; // Skip file
+                    }
+
+                    // Check file type
+                    if (!allowedTypes.includes(file.type)) { // If type not allowed
+                        this.showToast(`File type "${file.type}" is not allowed.`, 'error'); // Show error toast
+                        return; // Skip file
+                    }
+
+                    // Prevent duplicate files by name and size
+                    const alreadyExists = this.selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                    if (!alreadyExists) {
+                        this.selectedFiles.push(file); // Add file to selectedFiles array
+                    }
+                }); // End of forEach
+
+                this.updateFilePreview(); // Update file preview list
+            } // End of handleFileSelection
+
+
+            updateFilePreview() { // Update the file preview list
+                const previewList = document.getElementById('file-preview-list'); // Get preview list element
+                previewList.innerHTML = ''; // Clear previous preview
+
+                if (this.selectedFiles.length === 0) { // If no files selected
+                    previewList.classList.add('hidden'); // Hide preview list
+                    return; // Exit function
+                }
+
+                previewList.classList.remove('hidden'); // Show preview list
+                const title = document.createElement('h5'); // Create title element
+                title.textContent = '📎 Selected Files'; // Set title text
+                previewList.appendChild(title); // Add title to preview list
+
+                this.selectedFiles.forEach((file, index) => { // For each selected file
+                    const fileItem = document.createElement('div'); // Create file item div
+                    fileItem.className = 'file-preview-item'; // Set class for styling
+                    fileItem.innerHTML = `
+                        <div class="file-info">
+                            <span class="file-icon">${this.getFileIcon(file.type)}</span>
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-size">(${this.formatFileSize(file.size)})</span>
+                        </div>
+                        <button type="button" class="btn btn--sm btn--outline" onclick="equipmentManager.removeFile(${index})">×</button>
+                    `; // Set file info and remove button
+                    previewList.appendChild(fileItem); // Add file item to preview list
+                }); // End of forEach
+            } // End of updateFilePreview
+
+            removeFile(index) { // Remove file from selected files
+                this.selectedFiles.splice(index, 1); // Remove file at index
+                this.updateFilePreview(); // Update preview list
+            } // End of removeFile
+
+            getFileIcon(mimeType) { // Get icon for file type
+                if (mimeType.startsWith('image/')) return '🖼️'; // Image icon
+                if (mimeType === 'application/pdf') return '📄'; // PDF icon
+                if (mimeType.includes('word')) return '📝'; // Word icon
+                if (mimeType.includes('excel') || mimeType.includes('sheet')) return '📊'; // Excel icon
+                return '📎'; // Default icon
+            } // End of getFileIcon
+
+            formatFileSize(bytes) { // Format file size for display
+                if (bytes === 0) return '0 Bytes'; // Zero bytes
+                const k = 1024; // Kilobyte
+                const sizes = ['Bytes', 'KB', 'MB', 'GB']; // Size units
+                const i = Math.floor(Math.log(bytes) / Math.log(k)); // Calculate size index
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]; // Return formatted size
+            } // End of formatFileSize
+
+            populateFormOptions() { // Populate dropdowns in forms
+                // Categories
+                const categorySelect = document.getElementById('category'); // Category dropdown
+                const categoryFilter = document.getElementById('category-filter'); // Category filter dropdown
+                
+                [categorySelect, categoryFilter].forEach(select => { // For each category dropdown
+                    if (select && !select.dataset.populated) { // If not already populated
+                        this.categories.forEach(category => { // For each category
+                            const option = document.createElement('option'); // Create option element
+                            option.value = category.name; // Set option value
+                            option.textContent = category.name; // Set option text
+                            select.appendChild(option); // Add option to dropdown
+                        }); // End of forEach
+                        select.dataset.populated = 'true'; // Mark as populated
+                    } // End of if
+                }); // End of forEach
+
+                // Locations
+                const locationSelect = document.getElementById('location'); // Location dropdown
+                const locationFilter = document.getElementById('location-filter'); // Location filter dropdown
+                
+                [locationSelect, locationFilter].forEach(select => { // For each location dropdown
+                    if (select && !select.dataset.populated) { // If not already populated
+                        this.locations.forEach(location => { // For each location
+                            const option = document.createElement('option'); // Create option element
+                            option.value = location; // Set option value
+                            option.textContent = location; // Set option text
+                            select.appendChild(option); // Add option to dropdown
+                        }); // End of forEach
+                        select.dataset.populated = 'true'; // Mark as populated
+                    } // End of if
+                }); // End of forEach
+
+                // Status filter
+                const statusFilter = document.getElementById('status-filter'); // Status filter dropdown
+                if (statusFilter && !statusFilter.dataset.populated) { // If not already populated
+                    const statuses = ['Operational', 'Maintenance Required', 'Out of Service', 'Calibration Due']; // Status options
+                    statuses.forEach(status => { // For each status
+                        const option = document.createElement('option'); // Create option element
+                        option.value = status; // Set option value
+                        option.textContent = status; // Set option text
+                        statusFilter.appendChild(option); // Add option to dropdown
+                    }); // End of forEach
+                    statusFilter.dataset.populated = 'true'; // Mark as populated
+                } // End of if
+
+                // Equipment dropdown for maintenance
+                this.updateMaintenanceEquipmentOptions(); // Update equipment options for maintenance
+                this.updateMaintenanceFilterOptions(); // Update maintenance filter options
+            } // End of populateFormOptions
+
+            updateMaintenanceEquipmentOptions() { // Update equipment dropdowns for maintenance
+                const maintenanceEquipmentSelect = document.getElementById('maintenance-equipment'); // Maintenance equipment dropdown
+                const maintenanceEquipmentFilter = document.getElementById('maintenance-equipment-filter'); // Maintenance equipment filter dropdown
+                
+                [maintenanceEquipmentSelect, maintenanceEquipmentFilter].forEach(select => { // For each dropdown
+                    if (!select) return; // Skip if not found
+
+                    // Clear existing options except first
+                    while (select.children.length > 1) { // Remove all but first option
+                        select.removeChild(select.lastChild); // Remove last child
+                    } // End of while
+
+                    // Add equipment options
+                    this.equipment.forEach(eq => { // For each equipment
+                        if (eq.asset_number && eq.asset_number !== 'null') { // If asset number exists
+                            const option = document.createElement('option'); // Create option element
+                            option.value = eq.asset_number; // Set option value
+                            option.textContent = `${eq.asset_number} - ${eq.name}`; // Set option text
+                            select.appendChild(option); // Add option to dropdown
+                        } // End of if
+                    }); // End of forEach
+                }); // End of forEach
+            } // End of updateMaintenanceEquipmentOptions
+
+            updateMaintenanceFilterOptions() { // Update maintenance filter options
+                // This is called when the view changes to maintenance
+                this.updateMaintenanceEquipmentOptions(); // Update equipment options
+            } // End of updateMaintenanceFilterOptions
+
+            showView(viewName) { // Show the selected view
+                // Update navigation
+                document.querySelectorAll('.nav-link').forEach(link => { // For each nav link
+                    link.classList.remove('active'); // Remove active class
+                }); // End of forEach
+                document.querySelector(`[data-view="${viewName}"]`).classList.add('active'); // Add active class to selected view
+
+                // Show view
+                document.querySelectorAll('.view').forEach(view => { // For each view
+                    view.classList.remove('active'); // Remove active class
+                }); // End of forEach
+                document.getElementById(`${viewName}-view`).classList.add('active'); // Add active class to selected view
+
+                this.currentView = viewName; // Set current view
+
+                // Update view content
+                setTimeout(() => { // Delay update
+                    switch (viewName) { // Switch on view name
+                        case 'dashboard':
+                            this.updateDashboard(); // Update dashboard
+                            break;
+                        case 'equipment':
+                            this.updateEquipmentTable(); // Update equipment table
+                            break;
+                        case 'maintenance':
+                            this.updateMaintenanceFilterOptions(); // Update maintenance filter options
+                            this.updateMaintenanceTable(); // Update maintenance table
+                            break;
+                        case 'reports':
+                            this.updateReports(); // Update reports
+                            break;
+                    } // End of switch
+                }, 50); // End of setTimeout
+            } // End of showView
+
+            updateDashboard() { // Update dashboard summary and charts
+                // Update summary cards
+                const totalEquipment = this.equipment.length; // Total equipment count
+                const operationalCount = this.equipment.filter(eq => eq.status === 'Operational').length; // Operational count
+                const maintenanceCount = this.equipment.filter(eq => eq.status === 'Maintenance Required').length; // Maintenance required count
+                const calibrationCount = this.equipment.filter(eq => eq.status === 'Calibration Due').length; // Calibration due count
+
+                document.getElementById('total-equipment').textContent = totalEquipment; // Set total equipment
+                document.getElementById('operational-count').textContent = operationalCount; // Set operational count
+                document.getElementById('maintenance-count').textContent = maintenanceCount; // Set maintenance count
+                document.getElementById('calibration-count').textContent = calibrationCount; // Set calibration count
+
+                // Update charts
+                setTimeout(() => { // Delay chart update
+                    this.updateCategoryChart(); // Update category chart
+                    this.updateMaintenanceAlerts(); // Update maintenance alerts
+                }, 100); // End of setTimeout
+            } // End of updateDashboard
+
+            updateCategoryChart() { // Update equipment category chart
+                const canvas = document.getElementById('category-chart'); // Get chart canvas
+                if (!canvas) return; // Exit if not found
+
+                const ctx = canvas.getContext('2d'); // Get canvas context
+                if (this.charts.categoryChart) { // If chart exists
+                    this.charts.categoryChart.destroy(); // Destroy previous chart
+                }
+
+                // Count equipment by category
+                const categoryCounts = {}; // Object for category counts
+                this.categories.forEach(cat => categoryCounts[cat.name] = 0); // Initialize counts
+                this.equipment.forEach(eq => { // For each equipment
+                    if (eq.category && categoryCounts.hasOwnProperty(eq.category)) { // If category exists
+                        categoryCounts[eq.category]++; // Increment count
+                    }
+                }); // End of forEach
+
+                const labels = Object.keys(categoryCounts).filter(key => categoryCounts[key] > 0); // Get non-zero categories
+                const data = labels.map(label => categoryCounts[label]); // Get data for chart
+                const colors = ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F']; // Chart colors
+
+                if (labels.length === 0) { // If no data
+                    ctx.font = '16px Arial'; // Set font
+                    ctx.fillStyle = '#666'; // Set color
+                    ctx.textAlign = 'center'; // Set alignment
+                    ctx.fillText('No equipment data', canvas.width/2, canvas.height/2); // Show message
+                    return; // Exit function
+                }
+
+                this.charts.categoryChart = new Chart(ctx, { // Create doughnut chart
+                    type: 'doughnut', // Chart type
+                    data: {
+                        labels: labels, // Chart labels
+                        datasets: [{
+                            data: data, // Chart data
+                            backgroundColor: colors.slice(0, labels.length), // Chart colors
+                            borderWidth: 2, // Border width
+                            borderColor: '#fff' // Border color
+                        }]
+                    }, // End of data
+                    options: {
+                        responsive: true, // Responsive chart
+                        maintainAspectRatio: false, // No aspect ratio
+                        plugins: {
+                            legend: { position: 'bottom' }, // Legend position
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) { // Tooltip label callback
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0); // Total count
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1); // Percentage
+                                        return `${context.label}: ${context.parsed} (${percentage}%)`; // Tooltip text
+                                    } // End of label callback
+                                } // End of callbacks
+                            } // End of tooltip
+                        } // End of plugins
+                    } // End of options
+                }); // End of Chart
+            } // End of updateCategoryChart
+
+            updateMaintenanceAlerts() { // Update maintenance alerts
+                const alertsContainer = document.getElementById('maintenance-alerts'); // Get alerts container
+                if (!alertsContainer) return; // Exit if not found
+
+                alertsContainer.innerHTML = ''; // Clear previous alerts
+                const today = new Date(); // Get today's date
+                const alerts = []; // Array for alerts
+
+                this.equipment.forEach(eq => { // For each equipment
+                    if (eq.next_maintenance) { // If next maintenance date exists
+                        const nextDate = new Date(eq.next_maintenance); // Parse date
+                        const daysUntil = Math.ceil((nextDate - today) / (1000 * 60 * 60 * 24)); // Days until maintenance
+
+                        if (daysUntil <= 30) { // If within 30 days
+                                // Automatically set status to 'Maintenance Required' if currently 'Operational'
+                                if (eq.status === 'Operational') {
+                                    eq.status = 'Maintenance Required';
+                                }
+                            alerts.push({ // Add alert
+                                equipment: eq, // Equipment object
+                                daysUntil: daysUntil, // Days until
+                                urgent: daysUntil <= 7 // Urgent if within 7 days
+                            }); // End of alert object
+                        } // End of if
+                    } // End of if
+                }); // End of forEach
+
+                alerts.sort((a, b) => a.daysUntil - b.daysUntil); // Sort alerts by daysUntil
+
+                if (alerts.length === 0) { // If no alerts
+                    alertsContainer.innerHTML = '<p class="empty-state">No upcoming maintenance alerts</p>'; // Show message
+                    return; // Exit function
+                }
+
+                alerts.forEach(alert => { // For each alert
+                    const statusText = alert.daysUntil <= 0 ? 'Overdue' : `${alert.daysUntil} days`; // Status text
+                    const alertDiv = document.createElement('div'); // Create alert div
+                    alertDiv.className = `maintenance-alert ${alert.urgent ? 'urgent' : ''}`; // Set class
+                    alertDiv.innerHTML = `
+                        <h4>${alert.equipment.name}</h4>
+                        <p><strong>Asset:</strong> ${alert.equipment.asset_number}</p>
+                        <p><strong>Due:</strong> ${statusText}</p>
+                    `; // Set alert content
+                    alertsContainer.appendChild(alertDiv); // Add alert to container
+                }); // End of forEach
+            } // End of updateMaintenanceAlerts
+
+            updateEquipmentTable() { // Update equipment table
+                this.filterEquipment(); // Filter and render equipment
+            } // End of updateEquipmentTable
+
+            filterEquipment() { // Filter equipment based on search and filters
+                const searchTerm = document.getElementById('search-input').value.toLowerCase(); // Get search term
+                const categoryFilter = document.getElementById('category-filter').value; // Get category filter
+                const statusFilter = document.getElementById('status-filter').value; // Get status filter
+                const locationFilter = document.getElementById('location-filter').value; // Get location filter
+
+                let filteredEquipment = this.equipment.filter(eq => { // Filter equipment array
+                    const matchesSearch = !searchTerm ||
+                        (eq.asset_number && eq.asset_number.toLowerCase().includes(searchTerm)) ||
+                        eq.name.toLowerCase().includes(searchTerm) ||
+                        (eq.model && eq.model.toLowerCase().includes(searchTerm)); // Search match
+
+                    const matchesCategory = !categoryFilter || eq.category === categoryFilter; // Category match
+                    const matchesStatus = !statusFilter || eq.status === statusFilter; // Status match
+                    const matchesLocation = !locationFilter || eq.location === locationFilter; // Location match
+
+                    return matchesSearch && matchesCategory && matchesStatus && matchesLocation; // Return match
+                }); // End of filter
+
+                this.renderEquipmentTable(filteredEquipment); // Render filtered equipment
+            } // End of filterEquipment
+
+            renderEquipmentTable(equipment) { // Render equipment table rows
+                const tbody = document.getElementById('equipment-table-body'); // Get table body
+                tbody.innerHTML = ''; // Clear previous rows
+
+                if (equipment.length === 0) { // If no equipment
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No equipment found</td></tr>'; // Show message
+                    return; // Exit function
+                }
+
+                equipment.forEach((eq, index) => { // For each equipment
+                    const nextMaintenance = eq.next_maintenance ? 
+                        new Date(eq.next_maintenance).toLocaleDateString() : 'Not scheduled'; // Format next maintenance
+                    
+                    const statusClass = `status-badge--${eq.status.toLowerCase().replace(/\s+/g, '-')}`; // Status class
+                    
+                    // Handle equipment with missing asset numbers
+                    const identifier = eq.asset_number && eq.asset_number !== 'null' ? eq.asset_number : `INDEX_${index}`; // Identifier
+                    const displayAssetNumber = eq.asset_number && eq.asset_number !== 'null' ? 
+                        `<a href="#" class="asset-link" onclick="equipmentManager.showEquipmentDetails('${identifier}')">${eq.asset_number}</a>` : 
+                        '<span class="missing-asset">⚠️ Missing</span>'; // Display asset number
+                    
+                    const row = document.createElement('tr'); // Create table row
+                    row.innerHTML = `
+                        <td>${displayAssetNumber}</td>
+                        <td>${eq.name}</td>
+                        <td>${eq.category}</td>
+                        <td>${eq.location || 'N/A'}</td>
+                        <td><span class="status-badge ${statusClass}">${eq.status}</span></td>
+                        <td>${nextMaintenance}</td>
+                        <td class="actions">
+                            <button class="btn btn--sm btn--secondary" onclick="equipmentManager.editEquipment('${identifier}')">Edit</button>
+                            <button class="btn btn--sm btn--primary" onclick="equipmentManager.showMaintenanceModal('${identifier}')">Maintain</button>
+                            <button class="btn btn--sm btn--outline" onclick="equipmentManager.deleteEquipment('${identifier}')">Delete</button>
+                        </td>
+                    `; // Set row content
+                    tbody.appendChild(row); // Add row to table
+                }); // End of forEach
+            } // End of renderEquipmentTable
+
+            updateMaintenanceTable() { // Update maintenance table
+                this.filterMaintenanceRecords(); // Filter and render maintenance records
+            } // End of updateMaintenanceTable
+
+            filterMaintenanceRecords() { // Filter maintenance records based on search and filters
+                const searchTerm = document.getElementById('maintenance-search').value.toLowerCase(); // Get search term
+                const equipmentFilter = document.getElementById('maintenance-equipment-filter').value; // Get equipment filter
+                const typeFilter = document.getElementById('maintenance-type-filter').value; // Get type filter
+                const dateFilter = document.getElementById('maintenance-date-filter').value; // Get date filter
+
+                let filteredRecords = this.maintenanceRecords.filter(record => { // Filter maintenance records
+                    // Search filter
+                    const matchesSearch = !searchTerm ||
+                        record.description.toLowerCase().includes(searchTerm) ||
+                        (record.technician && record.technician.toLowerCase().includes(searchTerm)) ||
+                        record.type.toLowerCase().includes(searchTerm); // Search match
+
+                    // Equipment filter
+                    const matchesEquipment = !equipmentFilter || record.equipment_asset === equipmentFilter; // Equipment match
+
+                    // Type filter
+                    const matchesType = !typeFilter || record.type === typeFilter; // Type match
+
+                    // Date filter
+                    let matchesDate = true; // Default to true
+                    if (dateFilter) { // If date filter applied
+                        const recordDate = new Date(record.date); // Parse record date
+                        const now = new Date(); // Get current date
+                        const daysAgo = (now - recordDate) / (1000 * 60 * 60 * 24); // Days ago
+
+                        switch (dateFilter) { // Switch on filter
+                            case 'last-30':
+                                matchesDate = daysAgo <= 30; // Last 30 days
+                                break;
+                            case 'last-90':
+                                matchesDate = daysAgo <= 90; // Last 90 days
+                                break;
+                            case 'last-year':
+                                matchesDate = daysAgo <= 365; // Last year
+                                break;
+                        } // End of switch
+                    } // End of if
+
+                    return matchesSearch && matchesEquipment && matchesType && matchesDate; // Return match
+                }); // End of filter
+
+                this.renderMaintenanceTable(filteredRecords); // Render filtered records
+            } // End of filterMaintenanceRecords
+
+            renderMaintenanceTable(records) { // Render maintenance table rows
+                const tbody = document.getElementById('maintenance-table-body'); // Get table body
+                tbody.innerHTML = ''; // Clear previous rows
+
+                if (records.length === 0) { // If no records
+                    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No maintenance records found</td></tr>'; // Show message
+                    return; // Exit function
+                }
+
+                records.forEach(record => { // For each record
+                    const equipment = this.equipment.find(eq => eq.asset_number === record.equipment_asset); // Find equipment
+                    const equipmentName = equipment ? equipment.name : 'Unknown Equipment'; // Get equipment name
+                    
+                    const fileCount = record.files ? record.files.length : 0; // Get file count
+                    const filesDisplay = fileCount > 0 ? 
+                        `<span class="file-count">📎 ${fileCount} file${fileCount > 1 ? 's' : ''}</span>` : 
+                        '<span class="no-files">No files</span>'; // Display files
+
+                    const row = document.createElement('tr'); // Create table row
+                    row.innerHTML = `
+                        <td><a href="#" class="maintenance-link" onclick="equipmentManager.showMaintenanceDetails('${record.id}')">#${record.id}</a></td>
+                        <td>${equipmentName}<br><small class="asset-number">${record.equipment_asset}</small></td>
+                        <td>${record.type}</td>
+                        <td>${new Date(record.date).toLocaleDateString()}</td>
+                        <td>${record.technician || 'N/A'}</td>
+                        <td>${record.cost ? '$' + record.cost.toLocaleString() : 'N/A'}</td>
+                        <td>${filesDisplay}</td>
+                        <td class="actions">
+                            <button class="btn btn--sm btn--secondary" onclick="equipmentManager.editMaintenanceRecord('${record.id}')">Edit</button>
+                            <button class="btn btn--sm btn--outline" onclick="equipmentManager.deleteMaintenanceRecord('${record.id}')">Delete</button>
+                        </td>
+                    `; // Set row content
+                    tbody.appendChild(row); // Add row to table
+                }); // End of forEach
+            } // End of renderMaintenanceTable
+
+            updateReports() { // Update reports view
+                setTimeout(() => { // Delay update
+                    this.updateStatusChart(); // Update status chart
+                }, 100); // End of setTimeout
+            } // End of updateReports
+
+            updateStatusChart() { // Update equipment status chart
+                const canvas = document.getElementById('status-chart'); // Get chart canvas
+                if (!canvas) return; // Exit if not found
+
+                const ctx = canvas.getContext('2d'); // Get canvas context
+                if (this.charts.statusChart) { // If chart exists
+                    this.charts.statusChart.destroy(); // Destroy previous chart
+                }
+
+                const statusCounts = { // Object for status counts
+                    'Operational': 0,
+                    'Maintenance Required': 0,
+                    'Out of Service': 0,
+                    'Calibration Due': 0
+                }; // End of statusCounts
+
+                this.equipment.forEach(eq => { // For each equipment
+                    if (eq.status && statusCounts.hasOwnProperty(eq.status)) { // If status exists
+                        statusCounts[eq.status]++; // Increment count
+                    }
+                }); // End of forEach
+
+                const labels = Object.keys(statusCounts); // Get status labels
+                const data = Object.values(statusCounts); // Get data for chart
+                const colors = ['#1FB8CD', '#FFC185', '#B4413C', '#5D878F']; // Chart colors
+
+                this.charts.statusChart = new Chart(ctx, { // Create bar chart
+                    type: 'bar', // Chart type
+                    data: {
+                        labels: labels, // Chart labels
+                        datasets: [{
+                            label: 'Equipment Count', // Dataset label
+                            data: data, // Chart data
+                            backgroundColor: colors, // Chart colors
+                            borderWidth: 1 // Border width
+                        }]
+                    }, // End of data
+                    options: {
+                        responsive: true, // Responsive chart
+                        maintainAspectRatio: false, // No aspect ratio
+                        scales: {
+                            y: {
+                                beginAtZero: true, // Start y-axis at zero
+                                ticks: { stepSize: 1 } // Step size for ticks
+                            }
+                        }, // End of scales
+                        plugins: {
+                            legend: { display: false } // Hide legend
+                        } // End of plugins
+                    } // End of options
+                }); // End of Chart
+            } // End of updateStatusChart
+
+            async generateAssetNumber() { // Generate asset number for equipment
+                const categorySelect = document.getElementById('category'); // Get category dropdown
+                const assetNumberField = document.getElementById('asset-number'); // Get asset number field
+                
+                const category = categorySelect.value; // Get selected category
+                if (!category) { // If no category selected
+                    assetNumberField.value = ''; // Clear asset number field
+                    return; // Exit function
+                }
+
+                if (this.serverConnected) { // If server is connected
+                    try {
+                        const response = await fetch('/api/generate-asset-number', { // Request asset number from server
+                            method: 'POST', // POST method
+                            headers: { 'Content-Type': 'application/json' }, // Set content type
+                            body: JSON.stringify({ category: category }) // Send category in body
+                        });
+
+                        if (response.ok) { // If response is OK
+                            const result = await response.json(); // Parse result
+                            assetNumberField.value = result.asset_number; // Set asset number field
+                        }
+                    } catch (error) { // On error
+                        console.error('Error generating asset number:', error); // Log error
+                        this.generateAssetNumberOffline(category, assetNumberField); // Fallback to offline
+                    }
+                } else { // If not connected
+                    this.generateAssetNumberOffline(category, assetNumberField); // Generate offline
+                }
+            } // End of generateAssetNumber
+
+            generateAssetNumberOffline(category, assetNumberField) { // Generate asset number offline
+                const categoryMap = { // Map category names to codes
+                    "Oscilloscope": "OSC", "Multimeter": "DMM", "Power Supply": "PSU", 
+                    "Generator": "GEN", "Analyzer": "ANA", "Computer": "CPU", 
+                    "Mechanical": "MEC", "Other": "OTH"
+                };
+
+                const year = new Date().getFullYear(); // Get current year
+                const categoryCode = categoryMap[category] || "OTH"; // Get category code
+                const categoryCount = this.equipment.filter(eq => eq.category === category).length + 1; // Count equipment in category
+                const assetNumber = `LAB-${year}-${categoryCode}-${categoryCount.toString().padStart(3, '0')}`; // Format asset number
+                
+                assetNumberField.value = assetNumber; // Set asset number field
+            } // End of generateAssetNumberOffline
+
+            showEquipmentModal(equipmentData = null) { // Show modal for adding/editing equipment
+                this.editingEquipment = equipmentData; // Set editing equipment
+                
+                const modal = document.getElementById('equipment-modal'); // Get modal element
+                const title = document.getElementById('equipment-modal-title'); // Get modal title
+                const form = document.getElementById('equipment-form'); // Get equipment form
+                
+                // Reset form
+                form.reset(); // Reset form fields
+                
+                if (equipmentData) { // If editing existing equipment
+                    // Edit mode
+                    title.textContent = 'Edit Equipment'; // Set modal title
+                    
+                    // Populate form fields
+                    document.getElementById('asset-number').value = equipmentData.asset_number || ''; // Asset number
+                    document.getElementById('name').value = equipmentData.name || ''; // Name
+                    document.getElementById('category').value = equipmentData.category || ''; // Category
+                    document.getElementById('model').value = equipmentData.model || ''; // Model
+                    document.getElementById('serial').value = equipmentData.serial_number || ''; // Serial number
+                    document.getElementById('manufacturer').value = equipmentData.manufacturer || ''; // Manufacturer
+                    document.getElementById('location').value = equipmentData.location || ''; // Location
+                    document.getElementById('purchase-date').value = equipmentData.purchase_date || ''; // Purchase date
+                    document.getElementById('warranty').value = equipmentData.warranty_expiry || ''; // Warranty expiry
+                    document.getElementById('cost').value = equipmentData.cost || ''; // Cost
+                    document.getElementById('status').value = equipmentData.status || 'Operational'; // Status
+                } else { // If adding new equipment
+                    // Add mode
+                    title.textContent = 'Add Equipment'; // Set modal title
+                    document.getElementById('asset-number').value = ''; // Clear asset number
+                }
+                
+                modal.classList.remove('hidden'); // Show modal
+            } // End of showEquipmentModal
+
+            showMaintenanceModal(assetNumber = null, maintenanceData = null) { // Show modal for adding/editing maintenance
+                this.editingMaintenance = maintenanceData; // Set editing maintenance
+                this.selectedFiles = []; // Clear selected files
+                
+                const modal = document.getElementById('maintenance-modal'); // Get modal element
+                const title = document.getElementById('maintenance-modal-title'); // Get modal title
+                const form = document.getElementById('maintenance-form'); // Get maintenance form
+                const existingFilesList = document.getElementById('existing-files-list'); // Get existing files list
+                
+                // Reset form and files
+                form.reset(); // Reset form fields
+                this.updateFilePreview(); // Update file preview
+                existingFilesList.classList.add('hidden'); // Hide existing files list
+                
+                if (maintenanceData) { // If editing existing maintenance
+                    // Edit mode
+                    title.textContent = 'Edit Maintenance Record'; // Set modal title
+                    
+                    // Populate form fields
+                    document.getElementById('maintenance-equipment').value = maintenanceData.equipment_asset || ''; // Equipment asset
+                    document.getElementById('maintenance-type').value = maintenanceData.type || ''; // Type
+                    document.getElementById('maintenance-date').value = maintenanceData.date || ''; // Date
+                    document.getElementById('maintenance-description').value = maintenanceData.description || ''; // Description
+                    document.getElementById('maintenance-technician').value = maintenanceData.technician || ''; // Technician
+                    document.getElementById('maintenance-cost').value = maintenanceData.cost || ''; // Cost
+                    document.getElementById('maintenance-next-due').value = maintenanceData.next_due || ''; // Next due
+                    document.getElementById('maintenance-status').value = maintenanceData.equipment_status || ''; // Equipment status
+                    
+                    // Show existing files
+                    if (maintenanceData.files && maintenanceData.files.length > 0) { // If files exist
+                        this.showExistingFiles(maintenanceData.files); // Show files
+                    }
+                } else { // If adding new maintenance
+                    // Add mode
+                    title.textContent = 'Add Maintenance Record'; // Set modal title
+                    
+                    // Set today's date as default
+                    document.getElementById('maintenance-date').value = new Date().toISOString().split('T')[0]; // Set date
+                    
+                    // Pre-select equipment if provided
+                    if (assetNumber && !assetNumber.startsWith('INDEX_')) { // If asset number provided
+                        document.getElementById('maintenance-equipment').value = assetNumber; // Set equipment
+                    }
+                }
+                
+                modal.classList.remove('hidden'); // Show modal
+            } // End of showMaintenanceModal
+
+            showExistingFiles(files) { // Show existing files in maintenance modal
+                const existingFilesList = document.getElementById('existing-files-list'); // Get files list element
+                const existingFilesContainer = document.getElementById('existing-files-container'); // Get files container
+                
+                existingFilesContainer.innerHTML = ''; // Clear container
+                
+                files.forEach((file, index) => { // For each file
+                    const fileItem = document.createElement('div'); // Create file item div
+                    fileItem.className = 'existing-file-item'; // Set class
+                    fileItem.innerHTML = `
+                        <div class="file-info">
+                            <span class="file-icon">${this.getFileIcon(file.mimetype)}</span>
+                            <a href="/api/maintenance/files/${file.filename}" target="_blank" class="file-name">${file.originalname}</a>
+                            <span class="file-size">(${this.formatFileSize(file.size)})</span>
+                        </div>
+                        <button type="button" class="btn btn--sm btn--outline" onclick="equipmentManager.removeExistingFile('${file.filename}')">×</button>
+                    `; // Set file info and remove button
+                    existingFilesContainer.appendChild(fileItem); // Add file item to container
+                }); // End of forEach
+                
+                existingFilesList.classList.remove('hidden'); // Show files list
+            } // End of showExistingFiles
+
+            async removeExistingFile(filename) { // Remove existing file from maintenance record
+                if (!confirm('Are you sure you want to delete this file?')) return; // Confirm deletion
+                
+                if (this.serverConnected) { // If server is connected
+                    try {
+                        const response = await fetch(`/api/maintenance/files/${filename}`, { // Request file deletion
+                            method: 'DELETE' // DELETE method
+                        });
+                        
+                        if (response.ok) { // If response is OK
+                            // Remove from UI
+                            const fileItem = document.querySelector(`[onclick*="${filename}"]`).closest('.existing-file-item'); // Find file item
+                            fileItem.remove(); // Remove file item
+                            
+                            // Update maintenance record
+                            if (this.editingMaintenance) { // If editing maintenance
+                                this.editingMaintenance.files = this.editingMaintenance.files.filter(f => f.filename !== filename); // Remove file from record
+                            }
+                            
+                            this.showToast('File deleted successfully', 'success'); // Show success toast
+                        } else { // If response not OK
+                            throw new Error('Failed to delete file'); // Throw error
+                        }
+                    } catch (error) { // On error
+                        console.error('Error deleting file:', error); // Log error
+                        this.showToast('Error deleting file', 'error'); // Show error toast
+                    }
+                } // End of if
+            } // End of removeExistingFile
+
+            showMaintenanceDetails(maintenanceId) { // Show details for a maintenance record
+                const record = this.maintenanceRecords.find(r => r.id == maintenanceId); // Find record by ID
+                if (!record) { // If not found
+                    this.showToast('Maintenance record not found', 'error'); // Show error toast
+                    return; // Exit function
+                }
+
+                const equipment = this.equipment.find(eq => eq.asset_number === record.equipment_asset); // Find equipment
+                const equipmentName = equipment ? equipment.name : 'Unknown Equipment'; // Get equipment name
+
+                const modal = document.getElementById('maintenance-detail-modal'); // Get modal element
+                const title = document.getElementById('maintenance-detail-title'); // Get modal title
+                const content = document.getElementById('maintenance-detail-content'); // Get modal content
+
+                title.textContent = `Maintenance Record #${record.id}`; // Set modal title
+
+                let filesSection = ''; // Section for files
+                if (record.files && record.files.length > 0) { // If files exist
+                    filesSection = `
+                        <div class="detail-section">
+                            <h4>📎 Attached Files</h4>
+                            ${record.files.map(file => `
+                                <div class="file-download-item">
+                                    <span class="file-icon">${this.getFileIcon(file.mimetype)}</span>
+                                    <a href="/api/maintenance/files/${file.filename}" target="_blank" class="file-name">${file.originalname}</a>
+                                    <span class="file-size">(${this.formatFileSize(file.size)})</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `; // Set files section
+                }
+
+                content.innerHTML = `
+                    <div class="maintenance-detail-grid">
+                        <div class="detail-section">
+                            <h4>Basic Information</h4>
+                            <p><strong>Record ID:</strong> #${record.id}</p>
+                            <p><strong>Equipment:</strong> ${equipmentName}</p>
+                            <p><strong>Asset Number:</strong> ${record.equipment_asset}</p>
+                            <p><strong>Type:</strong> ${record.type}</p>
+                            <p><strong>Date:</strong> ${new Date(record.date).toLocaleDateString()}</p>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Work Details</h4>
+                            <p><strong>Technician:</strong> ${record.technician || 'N/A'}</p>
+                            <p><strong>Cost:</strong> ${record.cost ? '$' + record.cost.toLocaleString() : 'N/A'}</p>
+                            <p><strong>Next Due:</strong> ${record.next_due ? new Date(record.next_due).toLocaleDateString() : 'Not scheduled'}</p>
+                            ${record.equipment_status ? `<p><strong>Status Update:</strong> <span class="status-badge status-badge--${record.equipment_status.toLowerCase().replace(/\s+/g, '-')}">${record.equipment_status}</span></p>` : ''}
+                        </div>
+                        
+                        <div class="detail-section detail-section--full">
+                            <h4>Description</h4>
+                            <p class="maintenance-description">${record.description}</p>
+                        </div>
+                        
+                        ${filesSection}
+                    </div>
+                `; // Set modal content
+
+                // Set up edit and delete buttons
+                document.getElementById('edit-maintenance-btn').onclick = () => { // Edit button
+                    this.hideModals(); // Hide modals
+                    setTimeout(() => this.editMaintenanceRecord(record.id), 100); // Edit record
+                };
+
+                document.getElementById('delete-maintenance-btn').onclick = () => { // Delete button
+                    this.hideModals(); // Hide modals
+                    setTimeout(() => this.deleteMaintenanceRecord(record.id), 100); // Delete record
+                };
+
+                modal.classList.remove('hidden'); // Show modal
+            } // End of showMaintenanceDetails
+
+            showEquipmentDetails(identifier) { // Show details for equipment
+                let equipment; // Equipment object
+                
+                if (identifier.startsWith('INDEX_')) { // If identifier is index
+                    const index = parseInt(identifier.replace('INDEX_', '')); // Parse index
+                    equipment = this.equipment[index]; // Get equipment by index
+                } else { // If identifier is asset number
+                    equipment = this.equipment.find(eq => eq.asset_number === identifier); // Find equipment
+                }
+                
+                if (!equipment) { // If not found
+                    this.showToast('Equipment not found', 'error'); // Show error toast
+                    return; // Exit function
+                }
+                
+                const modal = document.getElementById('equipment-detail-modal'); // Get modal element
+                const title = document.getElementById('equipment-detail-title'); // Get modal title
+                const content = document.getElementById('equipment-detail-content'); // Get modal content
+                
+                title.textContent = equipment.name; // Set modal title
+                
+                content.innerHTML = `
+                    <div class="equipment-detail-grid">
+                        <div class="detail-section">
+                            <h4>Basic Information</h4>
+                            <p><strong>Asset Number:</strong> ${equipment.asset_number || 'N/A'}</p>
+                            <p><strong>Name:</strong> ${equipment.name}</p>
+                            <p><strong>Category:</strong> ${equipment.category}</p>
+                            <p><strong>Status:</strong> <span class="status-badge status-badge--${equipment.status.toLowerCase().replace(/\s+/g, '-')}">${equipment.status}</span></p>
+                            <p><strong>Location:</strong> ${equipment.location || 'N/A'}</p>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Technical Details</h4>
+                            <p><strong>Model:</strong> ${equipment.model || 'N/A'}</p>
+                            <p><strong>Serial Number:</strong> ${equipment.serial_number || 'N/A'}</p>
+                            <p><strong>Manufacturer:</strong> ${equipment.manufacturer || 'N/A'}</p>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Financial Information</h4>
+                            <p><strong>Purchase Date:</strong> ${equipment.purchase_date ? new Date(equipment.purchase_date).toLocaleDateString() : 'N/A'}</p>
+                            <p><strong>Cost:</strong> ${equipment.cost ? '$' + equipment.cost.toLocaleString() : 'N/A'}</p>
+                            <p><strong>Warranty Expiry:</strong> ${equipment.warranty_expiry ? new Date(equipment.warranty_expiry).toLocaleDateString() : 'N/A'}</p>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Maintenance Information</h4>
+                            <p><strong>Last Maintenance:</strong> ${equipment.last_maintenance ? new Date(equipment.last_maintenance).toLocaleDateString() : 'Never'}</p>
+                            <p><strong>Next Maintenance:</strong> ${equipment.next_maintenance ? new Date(equipment.next_maintenance).toLocaleDateString() : 'Not scheduled'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-actions">
+                        <button class="btn btn--primary" onclick="equipmentManager.editEquipment('${identifier}'); equipmentManager.hideModals();">Edit Equipment</button>
+                        <button class="btn btn--secondary" onclick="equipmentManager.showMaintenanceModal('${identifier}'); equipmentManager.hideModals();">Add Maintenance</button>
+                    </div>
+                `; // Set modal content
+                
+                modal.classList.remove('hidden'); // Show modal
+            } // End of showEquipmentDetails
+
+            async saveEquipment() { // Save equipment (add or update)
+                const form = document.getElementById('equipment-form'); // Get equipment form
+                const formData = new FormData(form); // Get form data
+
+                const equipmentData = { // Build equipment data object
+                    asset_number: formData.get('asset_number'), // Asset number
+                    name: formData.get('name'), // Name
+                    category: formData.get('category'), // Category
+                    model: formData.get('model') || '', // Model
+                    serial_number: formData.get('serial_number') || '', // Serial number
+                    manufacturer: formData.get('manufacturer') || '', // Manufacturer
+                    location: formData.get('location') || '', // Location
+                    purchase_date: formData.get('purchase_date') || '', // Purchase date
+                    warranty_expiry: formData.get('warranty_expiry') || '', // Warranty expiry
+                    cost: parseFloat(formData.get('cost')) || 0, // Cost
+                    status: formData.get('status') || 'Operational', // Status
+                    last_maintenance: '', // Last maintenance
+                    next_maintenance: formData.get('next_maintenance') || '' // Next maintenance from input
+                }; // End of equipmentData
+
+                if (this.editingEquipment) { // If editing existing equipment
+                    // Update existing equipment
+                    const originalAsset = this.editingEquipment.asset_number; // Get original asset number
+                    
+                    if (this.serverConnected && originalAsset && originalAsset !== 'null') { // If server connected and asset valid
+                        try {
+                            const response = await fetch(`/api/equipment/${encodeURIComponent(originalAsset)}`, { // Update equipment on server
+                                method: 'PUT', // PUT method
+                                headers: { 'Content-Type': 'application/json' }, // Set content type
+                                body: JSON.stringify(equipmentData) // Send equipment data
+                            });
+
+                            if (response.ok) { // If response OK
+                                const index = this.equipment.findIndex(eq => eq.asset_number === originalAsset); // Find equipment index
+                                if (index !== -1) {
+                                    this.equipment[index] = await response.json(); // Update equipment in array
+                                }
+                                this.showToast('Equipment updated successfully', 'success'); // Show success toast
+                            } else {
+                                throw new Error('Failed to update equipment'); // Throw error
+                            }
+                        } catch (error) { // On error
+                            console.error('Error updating equipment:', error); // Log error
+                            this.showToast('Error updating equipment', 'error'); // Show error toast
+                        }
+                    } else { // If not connected or asset invalid
+                        // Update locally for equipment without valid asset numbers
+                        const index = this.equipment.findIndex(eq => 
+                            eq.asset_number === this.editingEquipment.asset_number || 
+                            JSON.stringify(eq) === JSON.stringify(this.editingEquipment)
+                        ); // Find equipment index
+                        if (index !== -1) {
+                            this.equipment[index] = { ...this.equipment[index], ...equipmentData }; // Update equipment locally
+                            this.showToast('Equipment updated locally', 'warning'); // Show warning toast
+                        }
+                    }
+                } else { // If adding new equipment
+                    // Add new equipment
+                    if (this.serverConnected) { // If server connected
+                        try {
+                            const response = await fetch('/api/equipment', { // Add equipment to server
+                                method: 'POST', // POST method
+                                headers: { 'Content-Type': 'application/json' }, // Set content type
+                                body: JSON.stringify(equipmentData) // Send equipment data
+                            });
+
+                            if (response.ok) { // If response OK
+                                const newEquipment = await response.json(); // Parse new equipment
+                                this.equipment.push(newEquipment); // Add to array
+                                this.showToast('Equipment added successfully', 'success'); // Show success toast
+                            } else {
+                                throw new Error('Failed to save equipment'); // Throw error
+                            }
+                        } catch (error) { // On error
+                            console.error('Error adding equipment:', error); // Log error
+                            this.showToast('Error saving equipment', 'error'); // Show error toast
+                            this.equipment.push(equipmentData); // Add locally
+                        }
+                    } else { // If not connected
+                        this.equipment.push(equipmentData); // Add locally
+                        this.showToast('Equipment added (offline mode)', 'warning'); // Show warning toast
+                    }
+                }
+
+                this.hideModals(); // Hide modals
+                this.updateMaintenanceEquipmentOptions(); // Update equipment options for maintenance
+                this.showView(this.currentView); // Refresh view
+            } // End of saveEquipment
+
+            async saveMaintenanceRecord() { // Save maintenance record (add or update)
+                const form = document.getElementById('maintenance-form'); // Get maintenance form
+                const formData = new FormData(form); // Get form data
+
+                // Add selected files to form data
+                this.selectedFiles.forEach(file => { // For each selected file
+                    formData.append('files', file); // Add file to form data
+                }); // End of forEach
+
+                // Show loading overlay
+                document.getElementById('loading-overlay').classList.remove('hidden'); // Show loading overlay
+
+                try {
+                    let response; // Response variable
+                    
+                    if (this.editingMaintenance) { // If editing existing maintenance
+                        // Update existing maintenance record
+                        response = await fetch(`/api/maintenance/${this.editingMaintenance.id}`, { // Update on server
+                            method: 'PUT', // PUT method
+                            body: formData // Send form data
+                        });
+                    } else { // If adding new maintenance
+                        // Add new maintenance record
+                        response = await fetch('/api/maintenance', { // Add to server
+                            method: 'POST', // POST method
+                            body: formData // Send form data
+                        });
+                    }
+
+                    if (response.ok) { // If response OK
+                        const result = await response.json(); // Parse result
+                        
+                        if (this.editingMaintenance) { // If editing
+                            // Update existing record in array
+                            const index = this.maintenanceRecords.findIndex(r => r.id === this.editingMaintenance.id); // Find index
+                            if (index !== -1) {
+                                this.maintenanceRecords[index] = result; // Update record
+                            }
+                            this.showToast('Maintenance record updated successfully', 'success'); // Show success toast
+                        } else { // If adding
+                            // Add new record to array
+                            this.maintenanceRecords.push(result); // Add record
+                            this.showToast(
+                                result.equipment_status 
+                                    ? `Maintenance saved and status updated to ${result.equipment_status}` 
+                                    : 'Maintenance record saved successfully', 
+                                'success'
+                            ); // Show success toast
+                        }
+
+                        // Update equipment locally too
+                        const equipment = this.equipment.find(eq => eq.asset_number === result.equipment_asset); // Find equipment
+                        if (equipment) {
+                            equipment.last_maintenance = result.date; // Update last maintenance
+                            if (result.next_due) {
+                                equipment.next_maintenance = result.next_due; // Update next maintenance
+                            }
+                            if (result.equipment_status) {
+                                equipment.status = result.equipment_status; // Update status
+                            }
+                        }
+
+                        this.hideModals(); // Hide modals
+                        this.showView(this.currentView); // Refresh view
+                    } else { // If response not OK
+                        throw new Error('Failed to save maintenance record'); // Throw error
+                    }
+                } catch (error) { // On error
+                    console.error('Error saving maintenance record:', error); // Log error
+                    this.showToast('Error saving maintenance record', 'error'); // Show error toast
+                } finally {
+                    // Hide loading overlay
+                    document.getElementById('loading-overlay').classList.add('hidden'); // Hide loading overlay
+                }
+            } // End of saveMaintenanceRecord
+
+            editEquipment(identifier) { // Edit equipment by identifier
+                let equipment; // Equipment object
+                
+                if (identifier.startsWith('INDEX_')) { // If identifier is index
+                    const index = parseInt(identifier.replace('INDEX_', '')); // Parse index
+                    equipment = this.equipment[index]; // Get equipment by index
+                } else { // If identifier is asset number
+                    equipment = this.equipment.find(eq => eq.asset_number === identifier); // Find equipment
+                }
+                
+                if (!equipment) { // If not found
+                    this.showToast('Equipment not found', 'error'); // Show error toast
+                    return; // Exit function
+                }
+                
+                this.showEquipmentModal(equipment); // Show equipment modal
+            } // End of editEquipment
+
+            editMaintenanceRecord(maintenanceId) { // Edit maintenance record by ID
+
+                const record = this.maintenanceRecords.find(r => r.id == maintenanceId); // Find maintenance record by ID
+                if (!record) { // If record not found
+                    this.showToast('Maintenance record not found', 'error'); // Show error toast
+                    return; // Exit function
+                }
+                
+                this.showMaintenanceModal(null, record); // Show maintenance modal for editing
+            } // End of editMaintenanceRecord
+
+            async deleteEquipment(identifier) { // Delete equipment by identifier
+                if (!confirm('Are you sure you want to delete this equipment?')) return; // Confirm deletion
+
+                let equipment; // Equipment object
+                let equipmentIndex; // Equipment index
+
+                if (identifier.startsWith('INDEX_')) { // If identifier is index
+                    equipmentIndex = parseInt(identifier.replace('INDEX_', '')); // Parse index
+                    equipment = this.equipment[equipmentIndex]; // Get equipment by index
+                } else { // If identifier is asset number
+                    equipment = this.equipment.find(eq => eq.asset_number === identifier); // Find equipment
+                    equipmentIndex = this.equipment.findIndex(eq => eq.asset_number === identifier); // Find index
+                }
+
+                if (!equipment || equipmentIndex === -1) { // If not found
+                    this.showToast('Equipment not found', 'error'); // Show error toast
+                    return; // Exit function
+                }
+
+                if (this.serverConnected && equipment.asset_number && equipment.asset_number !== 'null') { // If server connected and asset valid
+                    try {
+                        const response = await fetch(`/api/equipment/${encodeURIComponent(equipment.asset_number)}`, { // Request deletion from server
+                            method: 'DELETE' // DELETE method
+                        });
+
+                        if (response.ok) { // If response OK
+                            this.equipment.splice(equipmentIndex, 1); // Remove equipment from array
+                            this.showToast('Equipment deleted successfully', 'success'); // Show success toast
+                        } else { // If response not OK
+                            throw new Error('Failed to delete equipment'); // Throw error
+                        }
+                    } catch (error) { // On error
+                        console.error('Error deleting equipment:', error); // Log error
+                        this.showToast('Error deleting equipment', 'error'); // Show error toast
+                    }
+                } else { // If not connected or asset invalid
+                    // Delete locally
+                    this.equipment.splice(equipmentIndex, 1); // Remove equipment locally
+                    this.showToast('Equipment deleted (offline mode)', 'warning'); // Show warning toast
+                }
+
+                this.updateMaintenanceEquipmentOptions(); // Update maintenance equipment options
+                this.showView(this.currentView); // Refresh view
+            } // End of deleteEquipment
+
+            async deleteMaintenanceRecord(maintenanceId) { // Delete maintenance record by ID
+                if (!confirm('Are you sure you want to delete this maintenance record?')) return; // Confirm deletion
+
+                const recordIndex = this.maintenanceRecords.findIndex(r => r.id == maintenanceId); // Find record index
+                if (recordIndex === -1) { // If not found
+                    this.showToast('Maintenance record not found', 'error'); // Show error toast
+                    return; // Exit function
+                }
+
+                if (this.serverConnected) { // If server connected
+                    try {
+                        const response = await fetch(`/api/maintenance/${maintenanceId}`, { // Request deletion from server
+                            method: 'DELETE' // DELETE method
+                        });
+
+                        if (response.ok) { // If response OK
+                            this.maintenanceRecords.splice(recordIndex, 1); // Remove record from array
+                            this.showToast('Maintenance record deleted successfully', 'success'); // Show success toast
+                        } else { // If response not OK
+                            throw new Error('Failed to delete maintenance record'); // Throw error
+                        }
+                    } catch (error) { // On error
+                        console.error('Error deleting maintenance record:', error); // Log error
+                        this.showToast('Error deleting maintenance record', 'error'); // Show error toast
+                    }
+                } else { // If not connected
+                    // Delete locally
+                    this.maintenanceRecords.splice(recordIndex, 1); // Remove record locally
+                    this.showToast('Maintenance record deleted (offline mode)', 'warning'); // Show warning toast
+                }
+
+                this.showView(this.currentView); // Refresh view
+            } // End of deleteMaintenanceRecord
+
+            hideModals() { // Hide all modals
+                document.querySelectorAll('.modal').forEach(modal => { // For each modal
+                    modal.classList.add('hidden'); // Hide modal
+                }); // End of forEach
+                this.editingEquipment = null; // Clear editing equipment
+                this.editingMaintenance = null; // Clear editing maintenance
+                this.selectedFiles = []; // Clear selected files
+            } // End of hideModals
+
+            showToast(message, type = 'success') { // Show toast message
+                const toast = document.getElementById('toast'); // Get toast element
+                const toastMessage = document.getElementById('toast-message'); // Get toast message element
+                
+                if (!toast || !toastMessage) return; // If elements not found
+
+                toastMessage.textContent = message; // Set message
+                toast.className = `toast ${type} show`; // Set class
+
+                setTimeout(() => { // Hide toast after 4 seconds
+                    toast.classList.remove('show'); // Remove show class
+                    toast.classList.add('hidden'); // Add hidden class
+                }, 4000); // 4 seconds
+            } // End of showToast
+        } // End of EquipmentManager class
+
+        // Global functions for export and reports
+        function exportToCSV() { // Export equipment data to CSV
+            if (!window.equipmentManager) return; // If equipmentManager not initialized
+            
+            const equipment = window.equipmentManager.equipment; // Get equipment array
+            const headers = ['Asset Number', 'Name', 'Category', 'Model', 'Serial Number', 'Manufacturer', 'Location', 'Status', 'Purchase Date', 'Warranty Expiry', 'Cost']; // CSV headers
+
+            let csv = headers.join(',') + '\n'; // Start CSV string
+            equipment.forEach(eq => { // For each equipment
+                const row = [
+                    eq.asset_number || 'N/A', // Asset number
+                    `"${eq.name}"`, // Name
+                    eq.category || '', // Category
+                    `"${eq.model || ''}"`, // Model
+                    eq.serial_number || '', // Serial number
+                    `"${eq.manufacturer || ''}"`, // Manufacturer
+                    `"${eq.location || ''}"`, // Location
+                    eq.status || '', // Status
+                    eq.purchase_date || '', // Purchase date
+                    eq.warranty_expiry || '', // Warranty expiry
+                    eq.cost || 0 // Cost
+                ]; // End of row
+                csv += row.join(',') + '\n'; // Add row to CSV
+            }); // End of forEach
+
+            const blob = new Blob([csv], { type: 'text/csv' }); // Create CSV blob
+            const url = window.URL.createObjectURL(blob); // Create URL
+            const a = document.createElement('a'); // Create anchor
+            a.href = url; // Set href
+            a.download = 'equipment_inventory.csv'; // Set download filename
+            a.click(); // Trigger download
+            window.URL.revokeObjectURL(url); // Revoke URL
+
+            window.equipmentManager.showToast('Equipment data exported to CSV'); // Show toast
+        } // End of exportToCSV
+
+        function exportMaintenanceToCSV() { // Export maintenance records to CSV
+            if (!window.equipmentManager) return; // If equipmentManager not initialized
+            
+            const records = window.equipmentManager.maintenanceRecords; // Get maintenance records
+            const headers = ['Record ID', 'Equipment Asset', 'Equipment Name', 'Type', 'Date', 'Description', 'Technician', 'Cost', 'Next Due', 'Status Update']; // CSV headers
+
+            let csv = headers.join(',') + '\n'; // Start CSV string
+            records.forEach(record => { // For each record
+                const equipment = window.equipmentManager.equipment.find(eq => eq.asset_number === record.equipment_asset); // Find equipment
+                const equipmentName = equipment ? equipment.name : 'Unknown'; // Get equipment name
+                
+                const row = [
+                    record.id, // Record ID
+                    record.equipment_asset || '', // Equipment asset
+                    `"${equipmentName}"`, // Equipment name
+                    `"${record.type}"`, // Type
+                    record.date || '', // Date
+                    `"${record.description || ''}"`, // Description
+                    `"${record.technician || ''}"`, // Technician
+                    record.cost || 0, // Cost
+                    record.next_due || '', // Next due
+                    `"${record.equipment_status || ''}"` // Status update
+                ]; // End of row
+                csv += row.join(',') + '\n'; // Add row to CSV
+            }); // End of forEach
+
+            const blob = new Blob([csv], { type: 'text/csv' }); // Create CSV blob
+            const url = window.URL.createObjectURL(blob); // Create URL
+            const a = document.createElement('a'); // Create anchor
+            a.href = url; // Set href
+            a.download = 'maintenance_records.csv'; // Set download filename
+            a.click(); // Trigger download
+            window.URL.revokeObjectURL(url); // Revoke URL
+
+            window.equipmentManager.showToast('Maintenance records exported to CSV'); // Show toast
+        } // End of exportMaintenanceToCSV
+
+        function printReport() { // Print report
+            window.print(); // Trigger print dialog
+        } // End of printReport
+
+        function generateMaintenanceReport() { // Generate maintenance schedule report
+            if (!window.equipmentManager) return; // If equipmentManager not initialized
+
+            const maintenanceData = window.equipmentManager.equipment // Get equipment array
+                .filter(eq => eq.next_maintenance) // Filter equipment with next maintenance
+                .map(eq => ({ // Map to report data
+                    asset_number: eq.asset_number || 'N/A', // Asset number
+                    name: eq.name, // Name
+                    location: eq.location || 'N/A', // Location
+                    last_maintenance: eq.last_maintenance || 'Never', // Last maintenance
+                    next_maintenance: eq.next_maintenance // Next maintenance
+                })) // End of map
+                .sort((a, b) => new Date(a.next_maintenance) - new Date(b.next_maintenance)); // Sort by next maintenance date
+
+            const headers = ['Asset Number', 'Equipment Name', 'Location', 'Last Maintenance', 'Next Maintenance']; // CSV headers
+            let csv = headers.join(',') + '\n'; // Start CSV string
+
+            maintenanceData.forEach(eq => { // For each equipment
+                const row = [
+                    eq.asset_number, // Asset number
+                    `"${eq.name}"`, // Name
+                    `"${eq.location}"`, // Location
+                    eq.last_maintenance, // Last maintenance
+                    eq.next_maintenance // Next maintenance
+                ]; // End of row
+                csv += row.join(',') + '\n'; // Add row to CSV
+            }); // End of forEach
+
+            const blob = new Blob([csv], { type: 'text/csv' }); // Create CSV blob
+            const url = window.URL.createObjectURL(blob); // Create URL
+            const a = document.createElement('a'); // Create anchor
+            a.href = url; // Set href
+            a.download = 'maintenance_schedule.csv'; // Set download filename
+            a.click(); // Trigger download
+            window.URL.revokeObjectURL(url); // Revoke URL
+
+            window.equipmentManager.showToast('Maintenance schedule exported'); // Show toast
+        } // End of generateMaintenanceReport
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => { // On DOM loaded
+            window.equipmentManager = new EquipmentManager(); // Initialize EquipmentManager
+        }); // End of DOMContentLoaded
+    </script> <!-- End of script section -->
+
+    <style>
+        /* Additional styles for file upload and maintenance features */
+        .modal-content--large { /* Large modal content */
+            max-width: 800px;
+        }
+
+        .file-upload-section { /* File upload section styles */
+            margin-top: var(--space-24);
+            padding: var(--space-20);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            background-color: rgba(31, 184, 205, 0.02);
+        }
+
+        .file-upload-section h4 { /* File upload section heading */
+            margin-bottom: var(--space-8);
+            color: var(--color-primary);
+        }
+
+        .file-upload-help { /* Help text for file upload */
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-16);
+        }
+
+        .file-upload-dropzone { /* Dropzone for file upload */
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-32);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background-color: var(--color-surface);
+        }
+
+        .file-upload-dropzone:hover,
+        .file-upload-dropzone.dragover { /* Dropzone hover/dragover styles */
+            border-color: var(--color-primary);
+            background-color: rgba(31, 184, 205, 0.05);
+        }
+
+        .file-upload-icon { /* Icon for file upload */
+            font-size: var(--font-size-4xl);
+            margin-bottom: var(--space-12);
+        }
+
+        .file-upload-types { /* Supported file types text */
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-xs);
+            margin-top: var(--space-8);
+        }
+
+        .file-input { /* Hidden file input */
+            display: none;
+        }
+
+        .file-preview-list,
+        .existing-files-list { /* File preview and existing files list */
+            margin-top: var(--space-16);
+        }
+
+        .file-preview-list.hidden,
+        .existing-files-list.hidden { /* Hide file lists */
+            display: none;
+        }
+
+        .file-preview-item,
+        .existing-file-item { /* File preview and existing file item */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-8);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-8);
+        }
+
+        .file-info { /* File info section */
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+
+        .file-icon { /* File icon */
+            font-size: var(--font-size-lg);
+        }
+
+        .file-name { /* File name text */
+            font-weight: 500;
+            color: var(--color-primary);
+        }
+
+        .file-size { /* File size text */
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .file-count { /* File count text */
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        .no-files { /* No files text */
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        .maintenance-link { /* Maintenance link styles */
+            font-family: var(--font-family-mono);
+            font-weight: 600;
+            color: var(--color-primary);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .maintenance-link:hover { /* Maintenance link hover */
+            color: var(--color-primary-hover);
+        }
+
+        .asset-number { /* Asset number styles */
+            color: var(--color-text-secondary);
+            font-family: var(--font-family-mono);
+        }
+
+        .maintenance-detail-grid { /* Maintenance detail grid */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-24);
+            margin-bottom: var(--space-24);
+        }
+
+        .detail-section--full { /* Full-width detail section */
+            grid-column: 1 / -1;
+        }
+
+        .maintenance-description { /* Maintenance description styles */
+            background-color: rgba(31, 184, 205, 0.05);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-primary);
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .file-download-item { /* File download item styles */
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            padding: var(--space-8);
+            background-color: rgba(31, 184, 205, 0.05);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-8);
+        }
+
+        .loading-overlay { /* Loading overlay styles */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .loading-overlay.hidden { /* Hide loading overlay */
+            display: none;
+        }
+
+        .loading-spinner { /* Loading spinner styles */
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--color-border);
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: var(--space-16);
+        }
+
+        @keyframes spin { /* Spinner animation */
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay p { /* Loading overlay text */
+            color: white;
+            font-size: var(--font-size-lg);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) { /* Responsive styles */
+            .maintenance-detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .file-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-4);
+            }
+        }
+    </style> <!-- End of style section -->
+</body> <!-- End of body -->
+</html> <!-- End of HTML document -->
